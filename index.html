@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Привет...</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #ffe6f0, #e6f0ff);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ---------- Экран 1: признание ---------- */
+  #screen1 {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    transition: opacity 0.6s;
+  }
+  #screen1 h1 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  #answer {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ffb3c6;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    margin-bottom: 15px;
+  }
+  #answer:focus { border-color: #ff6b9d; }
+  #sendBtn {
+    background: #ff6b9d;
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  #sendBtn:hover { background: #ff4d85; }
+
+  /* ---------- Анимация "письмо уходит" ---------- */
+  #sending {
+    display: none;
+    text-align: center;
+    color: #ff6b9d;
+    font-size: 18px;
+    margin-top: 20px;
+  }
+  .plane {
+    display: inline-block;
+    animation: fly 1.2s ease-in-out infinite;
+  }
+  @keyframes fly {
+    0% { transform: translateX(0) rotate(0); }
+    50% { transform: translateX(10px) rotate(-10deg); }
+    100% { transform: translateX(0) rotate(0); }
+  }
+
+  /* ---------- Экран 2: "вин-блокер" ---------- */
+  #screen2 {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #001a33;
+    color: #fff;
+    z-index: 999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    font-family: 'Courier New', monospace;
+  }
+  #screen2 .logo {
+    font-size: 60px;
+    margin-bottom: 10px;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  #screen2 h2 {
+    color: #ff3b3b;
+    font-size: 24px;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+  }
+  #screen2 .msg {
+    max-width: 500px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #c0d0e0;
+    margin-bottom: 25px;
+  }
+  #screen2 .msg b { color: #ff3b3b; }
+  #passInput {
+    width: 80%;
+    max-width: 350px;
+    padding: 12px;
+    border: 2px solid #ff3b3b;
+    background: #000;
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    border-radius: 5px;
+    outline: none;
+    margin-bottom: 15px;
+  }
+  #unlockBtn {
+    background: #ff3b3b;
+    color: #fff;
+    border: none;
+    padding: 12px 40px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+  }
+  #unlockBtn:hover { background: #d42b2b; }
+  #errorMsg {
+    color: #ff3b3b;
+    margin-top: 10px;
+    font-size: 14px;
+    min-height: 20px;
+  }
+
+  /* Кнопка-спасатель */
+  #escapeBtn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 1000;
+  }
+  #escapeBtn:hover { background: rgba(255,255,255,0.3); }
+
+  /* ---------- Экран 3: финал ---------- */
+  #screen3 {
+    display: none;
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    z-index: 1001;
+  }
+  #screen3 h1 { font-size: 28px; margin-bottom: 15px; }
+  #screen3 p { color: #666; line-height: 1.6; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<!-- ЭКРАН 1 -->
+<div id="screen1">
+  <h1>Привет, ты мне нравишься взаимно?</h1>
+  <input type="text" id="answer" placeholder="Напиши что-нибудь...">
+  <button id="sendBtn">Отправить</button>
+  <div id="sending">
+    <span class="plane">✉️</span> Письмо уходит...
+  </div>
+</div>
+
+<!-- ЭКРАН 2: фейковый блокер -->
+<div id="screen2">
+  <div class="logo">🔒</div>
+  <h2>ДАННЫЕ ЗАШИФРОВАНЫ</h2>
+  <div class="msg">
+    Все ваши файлы и личные данные были <b>зашифрованы</b>.<br>
+    Для восстановления доступа введите пароль ниже.<br><br>
+    <span style="color:#ff3b3b;">⚠ Не пытайтесь закрыть страницу — данные будут потеряны.</span>
+  </div>
+  <input type="text" id="passInput" placeholder="Введите пароль..." autocomplete="off">
+  <button id="unlockBtn">Разблокировать</button>
+  <div id="errorMsg"></div>
+</div>
+
+<!-- Кнопка спасения -->
+<button id="escapeBtn">Это пранк, отпустите меня</button>
+
+<!-- ЭКРАН 3 -->
+<div id="screen3">
+  <h1>😂 Это был пранк!</h1>
+  <p>Твои данные в полном порядке, ничего не зашифровано. Просто улыбнись! <br><br> <i>(Можешь закрыть эту страницу)</i></p>
+</div>
+
+<script>
+  // Логика при нажатии "Отправить"
+  document.getElementById('sendBtn').addEventListener('click', function() {
+    // Скрываем кнопку и поле ввода
+    document.getElementById('sendBtn').style.display = 'none';
+    document.getElementById('answer').style.display = 'none';
+    // Показываем анимацию самолетика
+    document.getElementById('sending').style.display = 'block';
+
+    // Ждем 2 секунды и показываем блокер
+    setTimeout(function() {
+      document.getElementById('screen1').style.display = 'none';
+      document.getElementById('screen2').style.display = 'flex';
+      document.getElementById('escapeBtn').style.display = 'block';
+    }, 2000);
+  });
+
+  // Логика при нажатии "Разблокировать" (выдает ошибку)
+  document.getElementById('unlockBtn').addEventListener('click', function() {
+    const errors = [
+      'Неверный пароль. Осталось 2 попытки...', 
+      'Ошибка доступа. Попробуйте еще раз.', 
+      'Пароль не подходит. Данные под угрозой!',
+      'Связь с сервером потеряна...'
+    ];
+    const randomError = errors[Math.floor(Math.random() * errors.length)];
+    document.getElementById('errorMsg').innerText = randomError;
+    document.getElementById('passInput').value = ''; // очищаем поле
+  });
+
+  // Кнопка спасения (выход из пранка)
+  document.getElementById('escapeBtn').addEventListener('click', function() {
+    document.getElementById('screen2').style.display = 'none';
+    document.getElementById('escapeBtn').style.display = 'none';
+    document.getElementById('screen3').style.display = 'block';
+  });
+</script>
+
+</body>
+</html>
