@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Привет...</title>
+<title>System Error</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -27,59 +27,33 @@
     max-width: 420px;
     text-align: center;
     transition: opacity 0.6s;
+    z-index: 10;
   }
-  #screen1 h1 {
-    font-size: 22px;
-    color: #333;
-    margin-bottom: 20px;
-  }
+  #screen1 h1 { font-size: 22px; color: #333; margin-bottom: 20px; }
   #answer {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ffb3c6;
-    border-radius: 10px;
-    font-size: 16px;
-    outline: none;
-    margin-bottom: 15px;
+    width: 100%; padding: 12px; border: 2px solid #ffb3c6; border-radius: 10px;
+    font-size: 16px; outline: none; margin-bottom: 15px;
   }
   #answer:focus { border-color: #ff6b9d; }
   #sendBtn {
-    background: #ff6b9d;
-    color: #fff;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.2s;
+    background: #ff6b9d; color: #fff; border: none; padding: 12px 30px;
+    border-radius: 10px; font-size: 16px; cursor: pointer; transition: 0.2s;
   }
   #sendBtn:hover { background: #ff4d85; }
+  #sending { display: none; text-align: center; color: #ff6b9d; font-size: 18px; margin-top: 20px; }
+  .plane { display: inline-block; animation: fly 1.2s ease-in-out infinite; }
+  @keyframes fly { 0% { transform: translateX(0); } 50% { transform: translateX(10px) rotate(-10deg); } 100% { transform: translateX(0); } }
 
-  /* ---------- Анимация "письмо уходит" ---------- */
-  #sending {
-    display: none;
-    text-align: center;
-    color: #ff6b9d;
-    font-size: 18px;
-    margin-top: 20px;
-  }
-  .plane {
-    display: inline-block;
-    animation: fly 1.2s ease-in-out infinite;
-  }
-  @keyframes fly {
-    0% { transform: translateX(0) rotate(0); }
-    50% { transform: translateX(10px) rotate(-10deg); }
-    100% { transform: translateX(0) rotate(0); }
-  }
-
-  /* ---------- Экран 2: "вин-блокер" ---------- */
+  /* ---------- Экран 2: Хакерский блокер ---------- */
   #screen2 {
     display: none;
     position: fixed;
     inset: 0;
-    background: #001a33;
-    color: #fff;
+    background: #000;
+    background-image: linear-gradient(rgba(0, 255, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 0, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: #0f0;
     z-index: 999;
     flex-direction: column;
     align-items: center;
@@ -88,91 +62,54 @@
     padding: 20px;
     font-family: 'Courier New', monospace;
   }
-  #screen2 .logo {
-    font-size: 60px;
-    margin-bottom: 10px;
-    animation: pulse 1.5s infinite;
+  #screen2 .logo { font-size: 80px; margin-bottom: 10px; animation: glitch 1s infinite alternate; }
+  @keyframes glitch {
+    0% { text-shadow: 2px 0 red, -2px 0 blue; transform: translate(0); }
+    20% { text-shadow: -2px 0 red, 2px 0 blue; transform: translate(-2px, 2px); }
+    40% { text-shadow: 2px 0 red, -2px 0 blue; transform: translate(2px, -2px); }
+    100% { text-shadow: none; transform: translate(0); }
   }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-  #screen2 h2 {
-    color: #ff3b3b;
-    font-size: 24px;
-    margin-bottom: 15px;
-    letter-spacing: 2px;
-  }
+  #screen2 h2 { color: #ff0000; font-size: 26px; margin-bottom: 15px; letter-spacing: 3px; text-shadow: 0 0 10px red; }
   #screen2 .msg {
-    max-width: 500px;
-    font-size: 15px;
-    line-height: 1.6;
-    color: #c0d0e0;
-    margin-bottom: 25px;
+    max-width: 500px; font-size: 15px; line-height: 1.6; color: #00ff00; margin-bottom: 25px;
+    border: 1px solid #0f0; padding: 15px; background: rgba(0, 255, 0, 0.1);
   }
-  #screen2 .msg b { color: #ff3b3b; }
+  #screen2 .msg b { color: #ff0000; }
   #passInput {
-    width: 80%;
-    max-width: 350px;
-    padding: 12px;
-    border: 2px solid #ff3b3b;
-    background: #000;
-    color: #0f0;
-    font-family: 'Courier New', monospace;
-    font-size: 16px;
-    border-radius: 5px;
-    outline: none;
-    margin-bottom: 15px;
+    width: 80%; max-width: 350px; padding: 12px; border: 2px solid #0f0;
+    background: #000; color: #0f0; font-family: 'Courier New', monospace;
+    font-size: 16px; outline: none; margin-bottom: 15px; text-align: center;
   }
   #unlockBtn {
-    background: #ff3b3b;
-    color: #fff;
-    border: none;
-    padding: 12px 40px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: 'Courier New', monospace;
+    background: #0f0; color: #000; border: none; padding: 12px 40px;
+    font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace;
+    transition: 0.3s; text-transform: uppercase;
   }
-  #unlockBtn:hover { background: #d42b2b; }
-  #errorMsg {
-    color: #ff3b3b;
-    margin-top: 10px;
-    font-size: 14px;
-    min-height: 20px;
-  }
+  #unlockBtn:hover { background: #fff; box-shadow: 0 0 20px #0f0; }
+  #errorMsg { color: #ff0000; margin-top: 15px; font-size: 14px; min-height: 20px; text-shadow: 0 0 5px red;}
 
-  /* Кнопка-спасатель */
-  #escapeBtn {
+  /* ---------- Экран 4: "Прощаю" ---------- */
+  #screen4 {
     display: none;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(255,255,255,0.15);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.3);
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
+    inset: 0;
+    background: #000;
     z-index: 1000;
-  }
-  #escapeBtn:hover { background: rgba(255,255,255,0.3); }
-
-  /* ---------- Экран 3: финал ---------- */
-  #screen3 {
-    display: none;
-    background: #fff;
-    padding: 40px 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    width: 90%;
-    max-width: 420px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    z-index: 1001;
+    padding: 20px;
+    font-family: 'Courier New', monospace;
   }
-  #screen3 h1 { font-size: 28px; margin-bottom: 15px; }
-  #screen3 p { color: #666; line-height: 1.6; font-size: 16px; }
+  #screen4 h1 {
+    color: #0f0;
+    font-size: 40px;
+    text-shadow: 0 0 20px #0f0, 0 0 40px #0f0;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+  #screen4 p { color: #0f0; margin-top: 20px; font-size: 18px; }
 </style>
 </head>
 <body>
@@ -187,66 +124,150 @@
   </div>
 </div>
 
-<!-- ЭКРАН 2: фейковый блокер -->
+<!-- ЭКРАН 2: Хакерский блокер -->
 <div id="screen2">
-  <div class="logo">🔒</div>
-  <h2>ДАННЫЕ ЗАШИФРОВАНЫ</h2>
+  <div class="logo">☠️</div>
+  <h2>[ ACCESS DENIED ]</h2>
   <div class="msg">
-    Все ваши файлы и личные данные были <b>зашифрованы</b>.<br>
-    Для восстановления доступа введите пароль ниже.<br><br>
-    <span style="color:#ff3b3b;">⚠ Не пытайтесь закрыть страницу — данные будут потеряны.</span>
+    Система заблокирована.<br>
+    Все ваши файлы зашифрованы алгоритмом AES-256.<br>
+    <b>ВВЕДИТЕ КОД РАЗБЛОКИРОВКИ:</b>
   </div>
-  <input type="text" id="passInput" placeholder="Введите пароль..." autocomplete="off">
-  <button id="unlockBtn">Разблокировать</button>
+  <input type="text" id="passInput" placeholder="--------" autocomplete="off">
+  <button id="unlockBtn">Взломать</button>
   <div id="errorMsg"></div>
 </div>
 
-<!-- Кнопка спасения -->
-<button id="escapeBtn">Это пранк, отпустите меня</button>
-
-<!-- ЭКРАН 3 -->
-<div id="screen3">
-  <h1>😂 Это был пранк!</h1>
-  <p>Твои данные в полном порядке, ничего не зашифровано. Просто улыбнись! <br><br> <i>(Можешь закрыть эту страницу)</i></p>
+<!-- ЭКРАН 4: Финал -->
+<div id="screen4">
+  <h1 id="typewriter"></h1>
+  <p id="subtext" style="opacity: 0; transition: opacity 1s;">Система восстановлена. Данные в безопасности.</p>
 </div>
 
 <script>
-  // Логика при нажатии "Отправить"
-  document.getElementById('sendBtn').addEventListener('click', function() {
-    // Скрываем кнопку и поле ввода
-    document.getElementById('sendBtn').style.display = 'none';
-    document.getElementById('answer').style.display = 'none';
-    // Показываем анимацию самолетика
+  // --- Звуковой движок (Web Audio API) ---
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  let audioCtx;
+
+  function initAudio() {
+    if (!audioCtx) { audioCtx = new AudioContext(); }
+    if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+  }
+
+  function playErrorSound() {
+    initAudio();
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.3);
+  }
+
+  function playSuccessSound() {
+    initAudio();
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+    osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2);
+    osc.frequency.setValueAtTime(1200, audioCtx.currentTime + 0.3);
+    gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.5);
+  }
+
+  // --- Логика ---
+  const sendBtn = document.getElementById('sendBtn');
+  const answerInput = document.getElementById('answer');
+  const screen1 = document.getElementById('screen1');
+  const screen2 = document.getElementById('screen2');
+  const screen4 = document.getElementById('screen4');
+  const passInput = document.getElementById('passInput');
+  const unlockBtn = document.getElementById('unlockBtn');
+  const errorMsg = document.getElementById('errorMsg');
+
+  // Кнопка отправить
+  sendBtn.addEventListener('click', function() {
+    initAudio(); // Инициализируем звук при первом клике
+    answerInput.style.display = 'none';
+    sendBtn.style.display = 'none';
     document.getElementById('sending').style.display = 'block';
 
-    // Ждем 2 секунды и показываем блокер
     setTimeout(function() {
-      document.getElementById('screen1').style.display = 'none';
-      document.getElementById('screen2').style.display = 'flex';
-      document.getElementById('escapeBtn').style.display = 'block';
+      screen1.style.display = 'none';
+      screen2.style.display = 'flex';
     }, 2000);
   });
 
-  // Логика при нажатии "Разблокировать" (выдает ошибку)
-  document.getElementById('unlockBtn').addEventListener('click', function() {
-    const errors = [
-      'Неверный пароль. Осталось 2 попытки...', 
-      'Ошибка доступа. Попробуйте еще раз.', 
-      'Пароль не подходит. Данные под угрозой!',
-      'Связь с сервером потеряна...'
-    ];
-    const randomError = errors[Math.floor(Math.random() * errors.length)];
-    document.getElementById('errorMsg').innerText = randomError;
-    document.getElementById('passInput').value = ''; // очищаем поле
+  // Кнопка взломать
+  unlockBtn.addEventListener('click', function() {
+    const val = passInput.value.trim();
+    if (val === '1488') {
+      // Успех
+      playSuccessSound();
+      screen2.style.display = 'none';
+      screen4.style.display = 'flex';
+      startTypewriter();
+    } else {
+      // Ошибка
+      playErrorSound();
+      const errors = [
+        'ДОСТУП ЗАПРЕЩЕН. ПОПЫТКА ЗАФИКСИРОВАНА.',
+        'НЕВЕРНЫЙ КОД. ОСТАЛОСЬ 1 ПОПЫТКА...',
+        'ОШИБКА 404. СЕРВЕР НЕ ОТВЕЧАЕТ.',
+        'ОБНАРУЖЕНА УГРОЗА. СИСТЕМА УНИЧТОЖАЕТ ДАННЫЕ...'
+      ];
+      errorMsg.innerText = errors[Math.floor(Math.random() * errors.length)];
+      passInput.value = '';
+    }
   });
 
-  // Кнопка спасения (выход из пранка)
-  document.getElementById('escapeBtn').addEventListener('click', function() {
-    document.getElementById('screen2').style.display = 'none';
-    document.getElementById('escapeBtn').style.display = 'none';
-    document.getElementById('screen3').style.display = 'block';
+  // Эффект печатной машинки для финала
+  function startTypewriter() {
+    const text = "ЛАДНО, ПРОЩАЮ";
+    const el = document.getElementById('typewriter');
+    let i = 0;
+    el.innerHTML = '';
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        el.innerHTML += text.charAt(i);
+        // Пиканье при печати
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 800;
+        gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+        
+        i++;
+      } else {
+        clearInterval(timer);
+        document.getElementById('subtext').style.opacity = '1';
+      }
+    }, 150);
+  }
+
+  // Запрет на контекстное меню (ПКМ) и клавиши обновления
+  document.addEventListener('contextmenu', event => event.preventDefault());
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+      e.preventDefault();
+    }
   });
+
 </script>
-
 </body>
 </html>
