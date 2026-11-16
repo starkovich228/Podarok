@@ -62,6 +62,14 @@
     padding: 20px;
     font-family: 'Courier New', monospace;
   }
+  /* Добавил тряску экрана при появлении */
+  @keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    10%, 30%, 50%, 70%, 90% { transform: translate(-5px, 5px); }
+    20%, 40%, 60%, 80% { transform: translate(5px, -5px); }
+  }
+  .shake-effect { animation: shake 0.5s ease-in-out; }
+  
   #screen2 .logo { font-size: 80px; margin-bottom: 10px; animation: glitch 1s infinite alternate; }
   @keyframes glitch {
     0% { text-shadow: 2px 0 red, -2px 0 blue; transform: translate(0); }
@@ -145,13 +153,64 @@
 </div>
 
 <script>
-  // --- Звуковой движок (Web Audio API) ---
+  // --- Звуковой движок ---
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   let audioCtx;
 
   function initAudio() {
     if (!audioCtx) { audioCtx = new AudioContext(); }
     if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+  }
+
+  // ФУНКЦИЯ СТРАШНОГО КРИКА (генерируется кодом)
+  function playScreamSound() {
+    initAudio();
+    
+    // Создаем очень громкий, искаженный звук (смесь сирены и скрежета)
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    const distortion = audioCtx.createWaveShaper();
+
+    // Делаем звук "грязным"
+    function makeDistortionCurve(amount) {
+      let k = typeof amount === 'number' ? amount : 50,
+        n = 44100,
+        curve = new Float32Array(n),
+        deg = Math.PI / 180,
+        i = 0, x;
+      for ( ; i < n; ++i ) {
+        x = i * 2 / n - 1;
+        curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+      }
+      return curve;
+    }
+
+    distortion.curve = makeDistortionCurve(400);
+    distortion.oversample = '4x';
+
+    osc1.type = 'sawtooth';
+    osc2.type = 'square';
+
+    // Резкий скачок частоты вниз (эффект падения)
+    osc1.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 1.5);
+    
+    osc2.frequency.setValueAtTime(1200, audioCtx.currentTime);
+    osc2.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 1.5);
+
+    gainNode.gain.setValueAtTime(0.6, audioCtx.currentTime); // Громкость
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
+
+    osc1.connect(distortion);
+    osc2.connect(distortion);
+    distortion.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    osc1.start();
+    osc2.start();
+    osc1.stop(audioCtx.currentTime + 2);
+    osc2.stop(audioCtx.currentTime + 2);
   }
 
   function playErrorSound() {
@@ -198,7 +257,7 @@
 
   // Кнопка отправить
   sendBtn.addEventListener('click', function() {
-    initAudio(); // Инициализируем звук при первом клике
+    initAudio(); // Разрешаем звук
     answerInput.style.display = 'none';
     sendBtn.style.display = 'none';
     document.getElementById('sending').style.display = 'block';
@@ -206,6 +265,11 @@
     setTimeout(function() {
       screen1.style.display = 'none';
       screen2.style.display = 'flex';
+      
+      // Включаем СТРАШНЫЙ КРИК и тряску экрана
+      playScreamSound();
+      screen2.classList.add('shake-effect');
+      
     }, 2000);
   });
 
@@ -213,13 +277,11 @@
   unlockBtn.addEventListener('click', function() {
     const val = passInput.value.trim();
     if (val === '1488') {
-      // Успех
       playSuccessSound();
       screen2.style.display = 'none';
       screen4.style.display = 'flex';
       startTypewriter();
     } else {
-      // Ошибка
       playErrorSound();
       const errors = [
         'ДОСТУП ЗАПРЕЩЕН. ПОПЫТКА ЗАФИКСИРОВАНА.',
@@ -232,7 +294,7 @@
     }
   });
 
-  // Эффект печатной машинки для финала
+  // Эффект печатной машинки
   function startTypewriter() {
     const text = "ЛАДНО, ПРОЩАЮ";
     const el = document.getElementById('typewriter');
@@ -241,7 +303,6 @@
     const timer = setInterval(() => {
       if (i < text.length) {
         el.innerHTML += text.charAt(i);
-        // Пиканье при печати
         initAudio();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -251,7 +312,6 @@
         gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
         osc.start(); osc.stop(audioCtx.currentTime + 0.05);
-        
         i++;
       } else {
         clearInterval(timer);
@@ -260,14 +320,13 @@
     }, 150);
   }
 
-  // Запрет на контекстное меню (ПКМ) и клавиши обновления
+  // Запрет на контекстное меню и обновление
   document.addEventListener('contextmenu', event => event.preventDefault());
   document.addEventListener('keydown', function(e) {
     if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
       e.preventDefault();
     }
   });
-
 </script>
 </body>
 </html>
